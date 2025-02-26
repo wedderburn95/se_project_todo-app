@@ -88,7 +88,7 @@ addTodoForm.addEventListener("submit", (evt) => {
   const todo = generateTodo(values); // Now anytime a new card is created a unique id will be crated as well
   todosList.append(todo);
   closeModal(addTodoPopup);
-  addTodoForm.reset();
+  // addTodoForm.reset();
   newTodoValidator.resetValidation();
 });
 

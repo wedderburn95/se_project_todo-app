@@ -95,13 +95,14 @@ class FormValidator {
 
   resetValidation() {
     // Clear errors and reset inputs
-    this._inputList.forEach((inputElement) => {
-      this._hideInputError(inputElement);
-      inputElement.value = ""; // Reset input value
-    });
+    // this._inputList.forEach((inputElement) => {
+    //   this._hideInputError(inputElement);
+    //   inputElement.value = ""; // Reset input value
+    // });
 
     // Disable the submit button
     this._toggleButtonState();
+    this._formEl.reset();
   }
 
   // create a method
