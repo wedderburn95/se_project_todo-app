@@ -36,6 +36,12 @@ function closeOnEscape(evt) {
   }
 }
 
+function closeOnOverlay(evt) {
+  if (evt.target.classList.contains("popup_visible")) {
+    closeModal(evt.target);
+  }
+}
+
 // The logic in this function should all be handled in the Todo class.
 const generateTodo = (data) => {
   const todo = new Todo(data, "#todo-template");
