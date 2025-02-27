@@ -33,6 +33,14 @@ class Todo {
     const todoDate = this._todoElement.querySelector(".todo__date");
 
     todoNameEl.textContent = this._data.name;
+    todoDate.textContent = `Due: ${new Date(this._data.date).toLocaleString(
+      "en-US",
+      {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      }
+    )}`;
 
     this._generateCheckboxEl();
     this._setEventListeners();
