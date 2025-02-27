@@ -10,7 +10,7 @@ import FormValidator from "../components/FormValidator.js";
 
 const addTodoButton = document.querySelector(".button_action_add");
 const addTodoPopup = document.querySelector("#add-todo-popup");
-const addTodoForm = addTodoPopup.querySelector(".popup__form");
+const addTodoForm = addTodoPopup.querySelector("#add-todo-form");
 const addTodoCloseBtn = addTodoPopup.querySelector(".popup__close");
 // const todoTemplate = document.querySelector("#todo-template"); To Remove
 const todosList = document.querySelector(".todos__list");
@@ -74,6 +74,12 @@ addTodoCloseBtn.addEventListener("click", () => {
   closeModal(addTodoPopup);
 });
 
+// This will eliminate duplicate code and improve maintainability.
+const renderTodo = (data) => {
+  const todo = generateTodo(data);
+  todosList.append(todo);
+};
+
 addTodoForm.addEventListener("submit", (evt) => {
   evt.preventDefault();
   const name = evt.target.name.value;
@@ -92,10 +98,8 @@ addTodoForm.addEventListener("submit", (evt) => {
   newTodoValidator.resetValidation();
 });
 
-initialTodos.forEach((item) => {
-  const todo = generateTodo(item);
-  todosList.append(todo);
-});
+// Render initial todos using the new function
+initialTodos.forEach(renderTodo);
 
 //instantiate
 const newTodoValidator = new FormValidator(validationConfig, addTodoForm);
