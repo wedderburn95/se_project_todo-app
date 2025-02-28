@@ -91,8 +91,8 @@ addTodoForm.addEventListener("submit", (evt) => {
 
   const id = uuidv4(); //This id variable will create new id's for any added Todo item.
   const values = { name, date, id }; //  Add the new id as an argument to values
-  const todo = generateTodo(values); // Now anytime a new card is created a unique id will be crated as well
-  todosList.append(todo);
+  renderTodo(values); // Now anytime a new card is created a unique id will be crated as well
+  // todosList.append(todo);
   closeModal(addTodoPopup);
   // addTodoForm.reset();
   newTodoValidator.resetValidation();
