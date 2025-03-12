@@ -5,6 +5,7 @@ class Todo {
     this._id = data.id;
     this._completed = data.completed;
     this._selector = selector;
+    this._handleCheck = handleCheck;
   }
 
   _setEventListeners() {

@@ -20,9 +20,9 @@ const todoCounter = new TodoCounter(initialTodos, ".counter__text");
 
 // The logic in this function should all be handled in the Todo class.
 const generateTodo = (data) => {
-  const todo = new Todo(data, "#todo-template", todoCounter);
-  // const todoElement = todo.getView();
-  // return todoElement;
+  const todo = new Todo(data, "#todo-template", (isCompleted) => {
+    todoCounter.updateCompleted(isCompleted);
+  });
   return todo.getView();
 };
 
