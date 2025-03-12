@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "https://jspm.dev/uuid";
+// console.log("UUID Test:", uuidv4());
 import { initialTodos, validationConfig } from "../utils/constants.js";
 import Todo from "../components/Todo.js";
 // import from FormValidator.js
@@ -15,42 +16,47 @@ const addTodoCloseBtn = addTodoPopupEl.querySelector(".popup__close");
 // const todoTemplate = document.querySelector("#todo-template"); To Remove
 const todosList = document.querySelector(".todos__list");
 
-const addTodoPopup = new PopupWithForm("#add-todo-popup", () => {});
-addTodoPopup.setEventListeners();
-
-// const openModal = (modal) => {
-//   modal.classList.add("popup_visible");
-//   document.addEventListener("keydown", closeOnEscape);
-//   modal.addEventListener("mousedown", closeOnOverlay);
-// };
-
-// const closeModal = (modal) => {
-//   modal.classList.remove("popup_visible");
-//   document.removeEventListener("keydown", closeOnEscape);
-//   modal.removeEventListener("mousedown", closeOnOverlay);
-// };
-
-// function closeOnEscape(evt) {
-//   if (evt.key === "Escape") {
-//     const openModal = document.querySelector(".popup_visible");
-//     if (openModal) {
-//       closeModal(openModal);
-//     }
-//   }
-// }
-
-// function closeOnOverlay(evt) {
-//   if (evt.target.classList.contains("popup_visible")) {
-//     closeModal(evt.target);
-//   }
-// }
+const todoCounter = new TodoCounter(initialTodos, ".counter__text");
 
 // The logic in this function should all be handled in the Todo class.
 const generateTodo = (data) => {
-  const todo = new Todo(data, "#todo-template");
-  const todoElement = todo.getView();
-  return todoElement;
+  const todo = new Todo(data, "#todo-template", todoCounter);
+  // const todoElement = todo.getView();
+  // return todoElement;
+  return todo.getView();
 };
+
+const todoSection = new Section(
+  {
+    items: initialTodos,
+    renderer: (data) => {
+      const todoElement = generateTodo(data);
+      todoSection.addItem(todoElement);
+    },
+  },
+  ".todos__list"
+);
+todoSection.renderItems();
+
+const addTodoPopup = new PopupWithForm("#add-todo-popup", () => {
+  const name = addTodoForm.name.value;
+  const dateInput = addTodoForm.date.value;
+
+  //Create a date object and adjust for timezone
+  const date = new Date(dateInput);
+  date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+
+  const id = uuidv4();
+
+  const values = { name, date, id };
+  renderTodo(values);
+  newTodoValidator.resetValidation();
+
+  addTodoForm.reset();
+
+  addTodoPopup.close();
+});
+addTodoPopup.setEventListeners();
 
 addTodoButton.addEventListener("click", () => {
   addTodoPopup.open();
@@ -60,29 +66,34 @@ addTodoButton.addEventListener("click", () => {
 const renderTodo = (data) => {
   const todo = generateTodo(data);
   todosList.append(todo);
+  //update the counter
+  todoCounter.updateTotal(true);
+  if (data.completed) {
+    todoCounter.updateCompleted(true);
+  }
 };
 
-addTodoForm.addEventListener("submit", (evt) => {
-  evt.preventDefault();
-  const name = evt.target.name.value;
-  const dateInput = evt.target.date.value;
+// addTodoForm.addEventListener("submit", (evt) => {
+//   evt.preventDefault();
+//   const name = evt.target.name.value;
+//   const dateInput = evt.target.date.value;
 
-  // Create a date object and adjust for timezone
-  const date = new Date(dateInput);
-  date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+//   // Create a date object and adjust for timezone
+//   const date = new Date(dateInput);
+//   date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
 
-  const id = uuidv4(); //This id variable will create new id's for any added Todo item.
-  const values = { name, date, id }; //  Add the new id as an argument to values
-  renderTodo(values); // Now anytime a new card is created a unique id will be crated as well
-  // todosList.append(todo);
-  // closeModal(addTodoPopupEl);
-  addTodoPopup.close();
-  // addTodoForm.reset();
-  newTodoValidator.resetValidation();
-});
+//   const id = uuidv4(); //This id variable will create new id's for any added Todo item.
+//   const values = { name, date, id }; //  Add the new id as an argument to values
+//   renderTodo(values); // Now anytime a new card is created a unique id will be crated as well
+//   // todosList.append(todo);
+//   // closeModal(addTodoPopupEl);
+//   addTodoPopup.close();
+//   // addTodoForm.reset();
+//   newTodoValidator.resetValidation();
+// });
 
-// Render initial todos using the new function
-initialTodos.forEach(renderTodo);
+// Render initial todos using the new function( I commented this call out because it was duplicating the initial todos. I kept todoSection.renderItems(); in the Section class because it is needed to render the initial todos.)
+// initialTodos.forEach(renderTodo);
 
 //instantiate
 const newTodoValidator = new FormValidator(validationConfig, addTodoForm);

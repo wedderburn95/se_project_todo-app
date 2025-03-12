@@ -26,9 +26,9 @@ class Popup {
   }
 
   _handleEscapeClose(evt) {
-    // if (evt.key === "Escape") {
-    this.close();
-    // }
+    if (evt.key === "Escape") {
+      this.close();
+    }
   }
 
   _handleOverlayClose(evt) {

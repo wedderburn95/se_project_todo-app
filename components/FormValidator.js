@@ -72,7 +72,9 @@ class FormValidator {
 
   resetValidation() {
     // Disable the submit button
-    this._formEl.reset();
+    this._inputList.forEach((inputElement) =>
+      this._hideInputError(inputElement)
+    );
     this._toggleButtonState();
   }
 
