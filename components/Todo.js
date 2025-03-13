@@ -1,11 +1,12 @@
 class Todo {
-  constructor(data, selector, handleCheck) {
+  constructor(data, selector, handleCheck, handleDelete) {
     this._name = data.name;
     this._date = data.date;
     this._id = data.id;
     this._completed = data.completed;
     this._selector = selector;
     this._handleCheck = handleCheck;
+    this._handleDelete = handleDelete;
   }
 
   _setEventListeners() {
@@ -15,7 +16,11 @@ class Todo {
     });
     // () => {this._completed = !this._completed;});
 
-    this._deleteBtnEl.addEventListener("click", this._handleDelete);
+    this._deleteBtnEl.addEventListener("click", () => {
+      this._handleDelete(this._completed);
+      this._element.remove();
+      this._element = null;
+    });
     // () => {this._element.remove();});
   }
 
@@ -56,11 +61,10 @@ class Todo {
     this._completed = !this._completed;
   };
 
-  _handleDelete = () => {
-    this._element.remove();
-
-    this._element = null;
-  };
+  // _handleDelete = () => {
+  //   this._element.remove();
+  //   this._element = null;
+  // };
 
   getView() {
     if (!this._element) {

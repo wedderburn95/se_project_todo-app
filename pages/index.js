@@ -18,11 +18,24 @@ const todosList = document.querySelector(".todos__list");
 
 const todoCounter = new TodoCounter(initialTodos, ".counter__text");
 
+const handleDelete = (bool) => {
+  if (bool) {
+    todoCounter.updateCompleted(false);
+  }
+  todoCounter.updateTotal(false);
+};
+
 // The logic in this function should all be handled in the Todo class.
-const generateTodo = (data) => {
-  const todo = new Todo(data, "#todo-template", (isCompleted) => {
-    todoCounter.updateCompleted(isCompleted);
-  });
+const renderTodo = (data) => {
+  const todo = new Todo(
+    data,
+    "#todo-template",
+    (isCompleted) => {
+      todoCounter.updateCompleted(isCompleted);
+    },
+    handleDelete
+  );
+
   return todo.getView();
 };
 
@@ -30,7 +43,7 @@ const todoSection = new Section(
   {
     items: initialTodos,
     renderer: (data) => {
-      const todoElement = generateTodo(data);
+      const todoElement = renderTodo(data);
       todoSection.addItem(todoElement);
     },
   },
@@ -38,23 +51,18 @@ const todoSection = new Section(
 );
 todoSection.renderItems();
 
-const addTodoPopup = new PopupWithForm("#add-todo-popup", () => {
+const addTodoPopup = new PopupWithForm("#add-todo-popup", (values) => {
   const name = addTodoForm.name.value;
   const dateInput = addTodoForm.date.value;
-
-  //Create a date object and adjust for timezone
+  // Create a date object and adjust for timezone
   const date = new Date(dateInput);
   date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
-
   const id = uuidv4();
-
-  const values = { name, date, id };
-  renderTodo(values);
+  // const values = { name, date, id };
+  renderTodo({ ...values, id: uuidv4() });
   newTodoValidator.resetValidation();
-
-  addTodoForm.reset();
-
   addTodoPopup.close();
+  addTodoForm.reset();
 });
 addTodoPopup.setEventListeners();
 
@@ -63,34 +71,16 @@ addTodoButton.addEventListener("click", () => {
 });
 
 // This will eliminate duplicate code and improve maintainability.
-const renderTodo = (data) => {
-  const todo = generateTodo(data);
-  todosList.append(todo);
+const addRenderTodo = (data) => {
+  const todoElement = renderTodo(data);
+  todoSection.addItem(todoElement);
+  // todosList.addItem(todo);
   //update the counter
   todoCounter.updateTotal(true);
   if (data.completed) {
     todoCounter.updateCompleted(true);
   }
 };
-
-// addTodoForm.addEventListener("submit", (evt) => {
-//   evt.preventDefault();
-//   const name = evt.target.name.value;
-//   const dateInput = evt.target.date.value;
-
-//   // Create a date object and adjust for timezone
-//   const date = new Date(dateInput);
-//   date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
-
-//   const id = uuidv4(); //This id variable will create new id's for any added Todo item.
-//   const values = { name, date, id }; //  Add the new id as an argument to values
-//   renderTodo(values); // Now anytime a new card is created a unique id will be crated as well
-//   // todosList.append(todo);
-//   // closeModal(addTodoPopupEl);
-//   addTodoPopup.close();
-//   // addTodoForm.reset();
-//   newTodoValidator.resetValidation();
-// });
 
 // Render initial todos using the new function( I commented this call out because it was duplicating the initial todos. I kept todoSection.renderItems(); in the Section class because it is needed to render the initial todos.)
 // initialTodos.forEach(renderTodo);
