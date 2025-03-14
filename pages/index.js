@@ -18,8 +18,8 @@ const todosList = document.querySelector(".todos__list");
 
 const todoCounter = new TodoCounter(initialTodos, ".counter__text");
 
-const handleDelete = (bool) => {
-  if (bool) {
+const handleDelete = (evt) => {
+  if (evt) {
     todoCounter.updateCompleted(false);
   }
   todoCounter.updateTotal(false);
@@ -36,55 +36,54 @@ const renderTodo = (data) => {
     handleDelete
   );
 
-  return todo.getView();
+  const todoElement = todo.getView();
+  todoSection.addItem(todoElement);
+
+  // Only update total count if it's not an initial render
+  // if (!isInitialRender) {
+  //   todoCounter.updateTotal(true);
+  // }
+
+  // Update counters
+  // todoCounter.updateTotal(true);
+  // if (data.completed) {
+  //   todoCounter.updateCompleted(true);
+  // }
 };
 
 const todoSection = new Section(
   {
     items: initialTodos,
-    renderer: (data) => {
-      const todoElement = renderTodo(data);
-      todoSection.addItem(todoElement);
-    },
+    renderer: renderTodo,
   },
   ".todos__list"
 );
 todoSection.renderItems();
 
-const addTodoPopup = new PopupWithForm("#add-todo-popup", (values) => {
-  const name = addTodoForm.name.value;
-  const dateInput = addTodoForm.date.value;
-  // Create a date object and adjust for timezone
-  const date = new Date(dateInput);
-  date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
-  const id = uuidv4();
-  // const values = { name, date, id };
-  renderTodo({ ...values, id: uuidv4() });
-  newTodoValidator.resetValidation();
-  addTodoPopup.close();
-  addTodoForm.reset();
-});
+//instantiate
+const newTodoValidator = new FormValidator(validationConfig, addTodoForm);
+newTodoValidator.enableValidation();
+
+const addTodoPopup = new PopupWithForm(
+  "#add-todo-popup",
+  (values) => {
+    const todoData = {
+      id: uuidv4(),
+      ...values,
+      completed: false,
+    };
+
+    renderTodo(todoData);
+    newTodoValidator.resetValidation();
+    addTodoPopup.close();
+
+    todoCounter.updateTotal(true);
+  },
+  newTodoValidator
+);
+
 addTodoPopup.setEventListeners();
 
 addTodoButton.addEventListener("click", () => {
   addTodoPopup.open();
 });
-
-// This will eliminate duplicate code and improve maintainability.
-const addRenderTodo = (data) => {
-  const todoElement = renderTodo(data);
-  todoSection.addItem(todoElement);
-  // todosList.addItem(todo);
-  //update the counter
-  todoCounter.updateTotal(true);
-  if (data.completed) {
-    todoCounter.updateCompleted(true);
-  }
-};
-
-// Render initial todos using the new function( I commented this call out because it was duplicating the initial todos. I kept todoSection.renderItems(); in the Section class because it is needed to render the initial todos.)
-// initialTodos.forEach(renderTodo);
-
-//instantiate
-const newTodoValidator = new FormValidator(validationConfig, addTodoForm);
-newTodoValidator.enableValidation();

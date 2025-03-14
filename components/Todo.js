@@ -24,6 +24,13 @@ class Todo {
     // () => {this._element.remove();});
   }
 
+  toggleCompletion = () => {
+    this._completed = !this._completed;
+    // console.log("Inside toggleCompletion:", {
+    //   newCompletedState: this._completed,
+    // });
+  };
+
   _getTemplate() {
     return document
       .querySelector(this._selector)
@@ -56,15 +63,6 @@ class Todo {
     this._checkboxLabel.setAttribute("for", `todo-${this._id}`);
     this._deleteBtnEl = this._element.querySelector(".todo__delete-btn");
   }
-
-  toggleCompletion = () => {
-    this._completed = !this._completed;
-  };
-
-  // _handleDelete = () => {
-  //   this._element.remove();
-  //   this._element = null;
-  // };
 
   getView() {
     if (!this._element) {
